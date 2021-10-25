@@ -1,8 +1,8 @@
 ALTER
-USER postgres WITH ENCRYPTED PASSWORD 'admin';
+    USER postgres WITH ENCRYPTED PASSWORD 'admin';
 DROP SCHEMA IF EXISTS travelite CASCADE;
 CREATE
-EXTENSION IF NOT EXISTS citext;
+    EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA travelite;
 
 CREATE TABLE travelite.users
@@ -73,6 +73,7 @@ CREATE TABLE travelite.comment_photo
     comment_id INT                NOT NULL,
     trek_id    INT                NOT NULL,
     user_id    INT                NOT NULL,
+    photo_url  TEXT               NOT NULL,
     FOREIGN KEY (trek_id)
         REFERENCES travelite.trek (id),
     FOREIGN KEY (comment_id)

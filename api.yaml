@@ -1,0 +1,520 @@
+swagger: "2.0"
+info:
+  title: TraveLite
+  description: TraveLite API
+  version: 1.0.0
+
+schemes:
+  - https
+  - http
+paths:
+  /api/v1/login:
+    post:
+      tags:
+        - login
+      summary: Авторизация
+      description: Авторизация
+      parameters:
+        - name: login
+          in: body
+          description: Авторизационные данные
+          required: true
+          schema:
+            $ref: '#/definitions/Login'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+  /api/v1/logout:
+    delete:
+      tags:
+        - logout
+      summary: Выход из профиля
+      description: Выход из профиля
+      responses:
+        200:
+          description: OK
+  /api/v1/profile:
+    post:
+      tags:
+        - profile
+      summary: Создать профиль
+      description: Создание профиля пользователя
+      parameters:
+        - name: user
+          in: body
+          description: Данные о юзере
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreate'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/UserAuthorized'
+    patch:
+      tags:
+        - profile
+      summary: Изменить профиль
+      description: Изменение профиля
+      parameters:
+        - name: user
+          in: body
+          description: Данные о юзере, необходимо передавать все, даже неизмененные
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreate'
+      responses:
+        200:
+          description: Created
+          schema:
+            $ref: '#/definitions/UserAuthorized'
+  /api/v1/trek:
+    post:
+      tags:
+        - trek
+      summary: Создать маршрут
+      description: Создание маршрута пользователем
+      parameters:
+        - name: trek
+          in: body
+          description: Информацию о маршруте
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTrek'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/GetTrek'
+    get:
+      tags:
+        - trek
+      summary: Получить все актуальные маршруты
+      description: Получить все актуальные маршруты
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          type: number
+          format: uint64
+        - name: offset
+          in: query
+          required: true
+          type: number
+          format: uint64
+        - name: sort
+          in: query
+          type: string
+          enum: ["rate","difficult","days"]
+          description: Сортировка по определенному полю, rate - рейтинг, difficult - сложность, days - количество дней
+        - name: region
+          in: query
+          type: array
+          items:
+            type: string
+          description: Массив регионов, по которым требуется осуществить фильтрацию страницы
+        - name: difficult_begin
+          in: query
+          type: number
+          description: Фильтр по сложности, с какой сложности отфильтровать включительно
+        - name: difficult_end
+          in: query
+          type: number
+          description: Фильтр по сложности, до какой сложности отфильтровать включительно
+        - name: days_begin
+          in: query
+          type: number
+          description: Фильтр по количеству дней, с какого количества дней отфильтровать, включительно
+        - name: days_end
+          in: query
+          type: number
+          description: Фильтр по количеству дней, до какого количества дней отфильтровать, включительно
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/GetTreks'
+  /api/v1/profile/{id}:
+    get:
+      tags:
+        - profile
+      summary: Информация о пользователе
+      description: Получить всю информация о пользователе
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор пользователя
+          required: true
+          type: number
+          format: uint64
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/User'
+  /api/v1/trek/{id}:
+    get:
+      tags:
+        - trek
+      summary: Информация о маршруте
+      description: Получить всю информация о маршруте
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор маршрута
+          required: true
+          type: number
+          format: uint64
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/GetTrek'
+    patch:
+      tags:
+        - trek
+      summary: Изменить маршрут
+      description: Изменить любые поля в маршруте
+      parameters:
+        - name: id
+          in: path
+          description: Индентификатор маршрута
+          required: true
+          type: number
+          format: uint64
+        - name: trek
+          in: body
+          description: Изменненный маршрут, все старые поля обязательно отдать в теле ответа
+          schema:
+            $ref: '#/definitions/CreateTrek'
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/GetTrek'
+    delete:
+      tags:
+        - trek
+      summary: Удалить маршрут
+      description: Удалить маршрут
+      parameters:
+        - name: id
+          in: path
+          description: Индентификатор маршрута
+          required: true
+          type: number
+      responses:
+        200:
+          description: OK
+  /api/v1/trek/profile/{id}:
+    get:
+      tags:
+        - trek
+      summary: Все маршруты пользователя
+      description: Получить все  маршруты текущего пользователя
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор пользователя
+          required: true
+          type: number
+          format: uint64
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/GetTreks'
+  /api/v1/region/{id}:
+    get:
+      tags:
+        - region
+      summary: Информация о регионе
+      description: Получить всю информация о регионе
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор региона
+          required: true
+          type: number
+          format: uint64
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/Region'
+  /api/v1/region:
+    get:
+      tags:
+        - region
+      summary: Список всех регионов
+      description: Получить список всех регионов, заранее забиты на беке
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/Regions'
+  /api/v1/trek/search:
+    get:
+      tags:
+        - trek
+      summary: Поиск маршрутов
+      description: Простой поиск по словам, либо входящим к заголовок маршрута, либо в описание
+      parameters:
+        - name: search_string
+          in: query
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/GetTreks'
+  /api/v1/trek/{id}/comments:
+    get:
+      tags:
+        - trek
+      summary: Получить все комментарии к маршруту
+      description: Получить все комментарии к маршруту по id
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/Comments'
+    post:
+      tags:
+        - trek
+      summary: Добавить комментарий к маршруту
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор региона
+          required: true
+          type: number
+          format: uint64
+        - name: comment
+          in: body
+          description: Данные о новом комментарии
+          required: true
+          schema:
+            $ref: '#/definitions/Comment'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/Comment'
+  /api/v1/trek/{id}/rate:
+    post:
+      tags:
+        - trek
+      summary: Оценить маршрут
+      description: Поставть рейтинг маршруту от 1 до 5
+      parameters:
+        - name: id
+          in: path
+          description: индентификатор региона
+          required: true
+          type: number
+          format: uint64
+        - name: rate
+          in: body
+          description: Оценка маршруту
+          required: true
+          schema:
+            $ref: '#/definitions/Rate'
+      responses:
+        200:
+          description: OK
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: number
+        format: uint64
+        example: 228
+        readOnly: true
+        description: "user id"
+      email:
+        type: string
+        example: "kek@mem.ru"
+      nickname:
+        type: string
+        example: "kek"
+      img:
+        type: string
+        example: "findreelancer.ru/images/kek.jpeg"
+        readOnly: true
+      auth_token:
+        type: string
+        example: "2281488"
+        readOnly: true
+      treks_number:
+        type: number
+        example: 211
+        readOnly: true
+  UserCreate:
+    type: object
+    properties:
+      email:
+        type: string
+        example: "kek@mem.ru"
+      nickname:
+        type: string
+        example: "kek"
+      password:
+        type: string
+        example: "123456789"
+      img:
+        type: string
+        format: Base64
+        example: "/9j/4AAQSkZJRgABAQEASABIAAD/"
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+        example: "kek@mem.ru"
+      password:
+        type: string
+        example: "123456789"
+  UserAuthorized:
+    type: object
+    properties:
+      id:
+        type: number
+        format: uint64
+        example: 228
+        readOnly: true
+        description: "user id"
+      auth_token:
+        type: string
+        example: "2281488"
+        readOnly: true
+  CreateTrek:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "Муринские топи"
+      difficult:
+        type: number
+        minimum: 0
+        maximum: 5
+        example: 3
+      days:
+        type: number
+        format: uint64
+        example: 4
+      things:
+        type: array
+        items:
+          type: string
+        example: [ "Водка", "Побольше водки" ]
+      description:
+        type: string
+        example: "Самый лучший поход, 4 дня, 5км, 20 литров водки"
+      file:
+        type: string
+        format: KML
+        example: "<?xml version=1.0 encoding=UTF-8?><kml xmlnshttps://www.opengis.net/kml/2.2><Document><Placemk"
+      region:
+        type: string
+        example: "Москва и МО"
+        description: "Регион вводится из предложенных, которые заранее забиты на беке, получить их можно из гет запроса"
+  GetTrek:
+    type: object
+    properties:
+      id:
+        type: number
+        format: uint64
+        example: 228
+        readOnly: true
+        description: "trek id"
+      name:
+        type: string
+        example: "Муринские топи"
+      difficult:
+        type: number
+        minimum: 0
+        maximum: 5
+        example: 3
+      days:
+        type: number
+        format: uint64
+        example: 4
+      things:
+        type: array
+        items:
+          type: string
+        example: [ "Водка", "Побольше водки" ]
+      description:
+        type: string
+        example: "Самый лучший поход, 4 дня, 5км, 20 литров водки"
+      file:
+        type: string
+        format: url
+        example: "findfreelancer/kek.kml"
+      region:
+        type: string
+        example: "Москва и МО"
+      rating:
+        type: number
+        example: 4.2
+  GetTreks:
+    type: array
+    items:
+      $ref: '#/definitions/GetTrek'
+  Region:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 228
+        readOnly: true
+      name:
+        type: string
+        readOnly: true
+        example: "Москва и МО"
+  Regions:
+    type: array
+    items:
+      $ref: '#/definitions/Region'
+  Comment:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 322
+        readOnly: true
+      trek_id:
+        type: number
+        example: 228
+      user_nick:
+        type: string
+        example: "Bizzaro"
+      title:
+        type: string
+        example: "Отличный маршрут"
+      description:
+        type: string
+        example: "Хорошо побухали, всем рекомендую"
+      photo:
+        type: array
+        items:
+          type: string
+        example: ["findfreelancer.ru/kek.jpg","findfreelancer.ru/mem.jpg"]
+  Comments:
+    type: array
+    items:
+     $ref: '#/definitions/Comment'
+  Rate:
+    type: object
+    properties:
+      user_id:
+        type: number
+        example: 228
+      rate:
+        type: number
+        example: 3
+        enum: [1, 2, 3, 4, 5]

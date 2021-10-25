@@ -45,22 +45,20 @@ func main() {
 	router := app.ConfigureRoute(*config, postgres.GetPostgres())
 
 	server := http.Server{
-		Addr: config.BindAddr,
+		Addr:    config.BindAddr,
 		Handler: router,
 	}
 
-	go func() {
-		if config.HTTPS {
-			log.Println("TLS server starting at port: ", server.Addr)
-			if err := server.ListenAndServeTLS(
-				"/etc/letsencrypt/live/findfreelancer.ru/cert.pem",
-				"/etc/letsencrypt/live/findfreelancer.ru/privkey.pem"); err != nil {
-				log.Fatal(err)
-			}
-		}
-		log.Println("Server starting at port", server.Addr)
-		if err := server.ListenAndServe(); err != nil {
+	if config.HTTPS {
+		log.Println("TLS server starting at port: ", server.Addr)
+		if err := server.ListenAndServeTLS(
+			"/etc/letsencrypt/live/findfreelancer.ru/cert.pem",
+			"/etc/letsencrypt/live/findfreelancer.ru/privkey.pem"); err != nil {
 			log.Fatal(err)
 		}
-	}()
+	}
+	log.Println("Server starting at port", server.Addr)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }

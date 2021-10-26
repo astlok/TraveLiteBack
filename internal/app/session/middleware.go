@@ -1,7 +1,11 @@
 package session
 
 import (
+	"context"
+	"math/rand"
 	"net/http"
+	"travalite/pkg/constants"
+	"travalite/pkg/httputils"
 )
 
 type Middleware struct {
@@ -16,7 +20,17 @@ func NewMiddleware(useCase UseCase) *Middleware {
 
 func (m *Middleware) CheckSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqId := rand.Uint64()
 
-		next.ServeHTTP(w, r)
+		sessionID := r.Header.Get("X-Auth-token")
+
+		u, err := m.useCase.Check(sessionID)
+		if err != nil {
+			httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+		}
+
+		ctx := context.WithValue(r.Context(), constants.CtxUserID, u.UserID)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

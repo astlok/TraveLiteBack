@@ -26,12 +26,24 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/User'
+        401:
+          description: Bad password or email
+          schema:
+            type: string
+            example: "bad password or email"
   /api/v1/logout:
     delete:
       tags:
         - logout
       summary: Выход из профиля
       description: Выход из профиля
+      parameters:
+        - name: auth token
+          in: body
+          description: Авторизационные данные
+          required: true
+          schema:
+            $ref: '#/definitions/UserAuthorized'
       responses:
         200:
           description: OK
@@ -53,23 +65,32 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/UserAuthorized'
+        409:
+          description: Duplicate email or nickname
+          schema:
+            type: string
+            example: "duplicate email OR duplicate nickname"
+
     patch:
       tags:
         - profile
       summary: Изменить профиль
       description: Изменение профиля
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: user
           in: body
-          description: Данные о юзере, необходимо передавать все, даже неизмененные
+          description: Данные о юзере необходимо передавать все, даже неизмененные
           required: true
           schema:
             $ref: '#/definitions/UserCreate'
       responses:
         200:
-          description: Created
-          schema:
-            $ref: '#/definitions/UserAuthorized'
+          description: OK
   /api/v1/trek:
     post:
       tags:
@@ -77,6 +98,11 @@ paths:
       summary: Создать маршрут
       description: Создание маршрута пользователем
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: trek
           in: body
           description: Информацию о маршруте
@@ -143,6 +169,11 @@ paths:
       summary: Информация о пользователе
       description: Получить всю информация о пользователе
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: индентификатор пользователя
@@ -161,6 +192,11 @@ paths:
       summary: Информация о маршруте
       description: Получить всю информация о маршруте
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: индентификатор маршрута
@@ -178,6 +214,11 @@ paths:
       summary: Изменить маршрут
       description: Изменить любые поля в маршруте
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: Индентификатор маршрута
@@ -200,6 +241,11 @@ paths:
       summary: Удалить маршрут
       description: Удалить маршрут
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: Индентификатор маршрута
@@ -215,6 +261,11 @@ paths:
       summary: Все маршруты пользователя
       description: Получить все  маршруты текущего пользователя
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: индентификатор пользователя
@@ -262,6 +313,11 @@ paths:
       summary: Поиск маршрутов
       description: Простой поиск по словам, либо входящим к заголовок маршрута, либо в описание
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: search_string
           in: query
           type: string
@@ -276,6 +332,12 @@ paths:
         - trek
       summary: Получить все комментарии к маршруту
       description: Получить все комментарии к маршруту по id
+      parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
       responses:
         200:
           description: Ok
@@ -286,6 +348,11 @@ paths:
         - trek
       summary: Добавить комментарий к маршруту
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: индентификатор региона
@@ -310,6 +377,11 @@ paths:
       summary: Оценить маршрут
       description: Поставть рейтинг маршруту от 1 до 5
       parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
         - name: id
           in: path
           description: индентификатор региона
@@ -365,10 +437,10 @@ definitions:
       password:
         type: string
         example: "123456789"
-      img:
-        type: string
-        format: Base64
-        example: "/9j/4AAQSkZJRgABAQEASABIAAD/"
+#      img:
+#        type: string
+#        format: Base64
+#        example: "/9j/4AAQSkZJRgABAQEASABIAAD/"
   Login:
     type: object
     properties:
@@ -381,7 +453,7 @@ definitions:
   UserAuthorized:
     type: object
     properties:
-      id:
+      user_id:
         type: number
         format: uint64
         example: 228
@@ -390,7 +462,6 @@ definitions:
       auth_token:
         type: string
         example: "2281488"
-        readOnly: true
   CreateTrek:
     type: object
     properties:

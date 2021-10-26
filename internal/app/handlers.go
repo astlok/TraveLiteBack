@@ -19,8 +19,8 @@ func ConfigureRoute(config configs.Config, postgres *sqlx.DB) *mux.Router {
 	sessionHandler := session.NewHandlers(*sessionUseCase)
 
 	profileRepo := profile.NewRepo(postgres)
-	profileUseCase := profile.NewUseCase(*profileRepo)
-	profileHandler := profile.NewHandler(*profileUseCase)
+	profileUseCase := profile.NewUseCase(*profileRepo, *sessionRepo)
+	profileHandler := profile.NewHandler(*profileUseCase, *sessionUseCase)
 
 	regionRepo := region.NewRepo(postgres)
 	regionUseCase := region.NewUseCase(*regionRepo)

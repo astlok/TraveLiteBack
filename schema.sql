@@ -10,7 +10,8 @@ CREATE TABLE travelite.users
     id       SERIAL PRIMARY KEY NOT NULL,
     email    CITEXT UNIQUE      NOT NULL,
     nickname CITEXT UNIQUE      NOT NULL,
-    img      TEXT
+    password TEXT               NOT NULL,
+    img      TEXT DEFAULT ''
 );
 
 CREATE TABLE travelite.sessions

@@ -4,4 +4,4 @@ run:
 del:
 	docker rm -f $(shell docker ps -aq)
 del_all_images:
-	 docker rmi -f $(shell docker images -a -q)
+	docker rmi -f $(shell docker images -a -q)

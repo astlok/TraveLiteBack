@@ -38,10 +38,12 @@ CREATE TABLE travelite.trek
     file        TEXT               NOT NULL,
     rating      INT,
     region_id   INT                NOT NULL,
+    user_id     INT                NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES travelite.users (id),
     FOREIGN KEY (region_id)
         REFERENCES travelite.region (id)
 );
-
 
 
 CREATE TABLE travelite.things
@@ -65,7 +67,9 @@ CREATE TABLE travelite.comment
     id          SERIAL PRIMARY KEY NOT NULL,
     trek_id     INT                NOT NULL,
     user_id     INT                NOT NULL,
-    description CITEXT             NOT NULL
+    description CITEXT             NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES travelite.users (id),
 );
 
 CREATE TABLE travelite.comment_photo

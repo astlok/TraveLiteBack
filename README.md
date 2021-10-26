@@ -8,3 +8,8 @@
 
 ### Ментор:
 - [Сергей Алексеев](https://github.com/snalexeev)
+
+### Запуск:
+    make run
+### Удаление образов докера
+    make del

@@ -69,7 +69,7 @@ CREATE TABLE travelite.comment
     user_id     INT                NOT NULL,
     description CITEXT             NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES travelite.users (id),
+        REFERENCES travelite.users (id)
 );
 
 CREATE TABLE travelite.comment_photo

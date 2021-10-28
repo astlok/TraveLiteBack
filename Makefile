@@ -1,7 +1,7 @@
 run:
 	docker build -t travelite:image .
 	docker run -d -p 8080:8080 travelite:image
-del:
+stop:
 	docker rm -f $(shell docker ps -aq)
-del_all_images:
+del:
 	docker rmi -f $(shell docker images -a -q)

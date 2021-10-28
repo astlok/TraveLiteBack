@@ -3,10 +3,13 @@ package profile
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gorilla/mux"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"travalite/internal/app/session"
 	"travalite/internal/models"
+	"travalite/pkg/constants"
 	customErrors "travalite/pkg/errors"
 	"travalite/pkg/httputils"
 )
@@ -74,9 +77,46 @@ func (h *Handlers) RegistrationProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) ChangeProfile(w http.ResponseWriter, r *http.Request) {
+	reqId := rand.Uint64()
 
+	u := &models.User{}
+	if err := json.NewDecoder(r.Body).Decode(u); err != nil {
+		if errors.Is(err, customErrors.DuplicateEmail) || errors.Is(err, customErrors.DuplicateNickName) {
+			httputils.Respond(w, r, reqId, http.StatusConflict, err.Error())
+			return
+		}
+		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.ID = r.Context().Value(constants.CtxUserID).(uint64)
+	err := h.profileUseCase.ChangeProfile(*u)
+	if err != nil {
+		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+		return
+	}
+	httputils.Respond(w, r, reqId, http.StatusOK, nil)
 }
 
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
+	reqId := rand.Uint64()
 
+	params := mux.Vars(r)
+	id, err := strconv.ParseUint(params["id"], 10, 64)
+	if err != nil {
+		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u, err := h.profileUseCase.GetUser(id)
+	if err != nil {
+		if errors.Is(err, customErrors.UserNotFound) {
+			httputils.Respond(w, r, reqId, http.StatusNotFound, err.Error())
+			return
+		}
+		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	httputils.Respond(w, r, reqId, http.StatusOK, u)
 }

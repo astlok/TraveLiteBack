@@ -47,6 +47,9 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            type: string
+            example: "user not found"
   /api/v1/profile:
     post:
       tags:
@@ -91,6 +94,11 @@ paths:
       responses:
         200:
           description: OK
+        409:
+          description: Duplicate email or nickname
+          schema:
+            type: string
+            example: "duplicate email OR duplicate nickname"
   /api/v1/trek:
     post:
       tags:
@@ -185,6 +193,9 @@ paths:
           description: Ok
           schema:
             $ref: '#/definitions/User'
+        404:
+          description: User not found
+
   /api/v1/trek/{id}:
     get:
       tags:

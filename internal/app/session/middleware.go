@@ -26,7 +26,8 @@ func (m *Middleware) CheckSession(next http.Handler) http.Handler {
 
 		u, err := m.useCase.Check(sessionID)
 		if err != nil {
-			httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
+			httputils.Respond(w, r, reqId, http.StatusForbidden, "bad auth-token")
+			return
 		}
 
 		ctx := context.WithValue(r.Context(), constants.CtxUserID, u.UserID)

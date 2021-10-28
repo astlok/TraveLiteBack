@@ -395,7 +395,7 @@ paths:
           required: true
         - name: id
           in: path
-          description: индентификатор региона
+          description: индентификатор маршрута
           required: true
           type: number
           format: uint64

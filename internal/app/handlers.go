@@ -61,9 +61,8 @@ func ConfigureRoute(config configs.Config, postgres *sqlx.DB) *mux.Router {
 
 	regionPrefix := apiV1Prefix.PathPrefix("/region").Subrouter()
 
-	regionPrefix.Use(sessionMiddleware.CheckSession)
 	regionPrefix.HandleFunc("/{id:[0-9]+}", regionHandler.GetRegionInfo).Methods(http.MethodGet)
-	regionPrefix.HandleFunc("/", regionHandler.GetRegions).Methods(http.MethodGet)
+	regionPrefix.HandleFunc("", regionHandler.GetRegions).Methods(http.MethodGet)
 
 	return router
 }

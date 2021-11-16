@@ -19,7 +19,7 @@ func NewUseCase(repo Repo) *UseCase {
 
 func (u *UseCase) Create(user models.User) (models.Session, error) {
 	var err error
-	s := models.Session{UserID: user.ID}
+	s := models.Session{ID: user.ID}
 
 	s.AuthToken, err = generateToken(user.Email)
 	if err != nil {

@@ -464,7 +464,7 @@ definitions:
   UserAuthorized:
     type: object
     properties:
-      user_id:
+      id:
         type: number
         format: uint64
         example: 228

@@ -30,7 +30,7 @@ func (m *Middleware) CheckSession(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), constants.CtxUserID, u.UserID)
+		ctx := context.WithValue(r.Context(), constants.CtxUserID, u.ID)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

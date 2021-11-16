@@ -28,6 +28,7 @@ func (u *UseCase) Create(user models.User) (uint64, error) {
 func (u *UseCase) Auth(user models.User) (models.User, error) {
 	var err error
 	user, err = u.userRepo.GetUserByEmailAndPass(user.Email, user.Password)
+	user.Password = ""
 	if err != nil {
 		return models.User{}, err
 	}

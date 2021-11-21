@@ -36,7 +36,6 @@ CREATE TABLE travelite.trek
     days        INT                NOT NULL,
     description CITEXT             NOT NULL,
     file        TEXT               NOT NULL,
-    rating      INT,
     region_id   INT                NOT NULL,
     user_id     INT                NOT NULL,
     FOREIGN KEY (user_id)
@@ -45,6 +44,16 @@ CREATE TABLE travelite.trek
         REFERENCES travelite.region (id)
 );
 
+CREATE TABLE travelite.trek_rating
+(
+    user_id INT NOT NULL,
+    trek_id INT NOT NULL,
+    rating  FLOAT8 NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES travelite.users (id),
+    FOREIGN KEY (trek_id)
+        REFERENCES travelite.trek (id)
+);
 
 CREATE TABLE travelite.things
 (
@@ -57,9 +66,9 @@ CREATE TABLE travelite.trek_things
     trek_id  INT NOT NULL,
     thing_id INT NOT NULL,
     FOREIGN KEY (trek_id)
-        REFERENCES travelite.trek (id),
+        REFERENCES travelite.trek (id) ON DELETE CASCADE,
     FOREIGN KEY (thing_id)
-        REFERENCES travelite.things (id)
+        REFERENCES travelite.things (id) ON DELETE CASCADE
 );
 
 CREATE TABLE travelite.comment

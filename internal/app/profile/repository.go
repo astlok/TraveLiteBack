@@ -85,3 +85,12 @@ func (r *Repo) ChangeProfile(u models.User) error {
 
 	return nil
 }
+
+func (r *Repo) SetImgUrl(user models.UserImg) error {
+	_, err := r.db.NamedExec(`UPDATE travelite.users SET img=:img WHERE id=:id`, user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

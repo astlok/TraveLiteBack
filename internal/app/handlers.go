@@ -44,6 +44,7 @@ func ConfigureRoute(config configs.Config, postgres *sqlx.DB) *mux.Router {
 	profilePrefix.Use(sessionMiddleware.CheckSession)
 	profilePrefix.HandleFunc("", profileHandler.ChangeProfile).Methods(http.MethodPatch)
 	profilePrefix.HandleFunc("/{id:[0-9]+}", profileHandler.GetProfile).Methods(http.MethodGet)
+	profilePrefix.HandleFunc("/{id:[0-9]+/avatar", profileHandler.PutAvatar).Methods(http.MethodGet)
 
 	trekPrefix := apiV1Prefix.PathPrefix("/trek").Subrouter()
 

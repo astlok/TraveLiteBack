@@ -3,6 +3,7 @@ package profile
 import (
 	"travalite/internal/app/session"
 	"travalite/internal/models"
+	"travalite/pkg/ImgCreator"
 )
 
 type UseCase struct {
@@ -54,4 +55,21 @@ func (u *UseCase) ChangeProfile(user models.User) error {
 	}
 
 	return nil
+}
+
+func (u *UseCase) SetImage(user models.UserImg) (models.UserImg, error) {
+	imgURL, err := imgcreator.ImgCreator().CreateImg(user.Img)
+	if err != nil {
+		return models.UserImg{}, err
+	}
+	user.Img = imgURL
+
+	err = u.userRepo.SetImgUrl(user)
+
+	if err != nil {
+		return models.UserImg{}, err
+	}
+
+
+	return user, nil
 }

@@ -73,7 +73,29 @@ paths:
           schema:
             type: string
             example: "duplicate email OR duplicate nickname"
+  /api/v1/profile/avatar:
+    post:
+      tags:
+        - profile
+      summary: Загрузка фотки
+      description: Загрузка фотографии пользователя
+      parameters:
+        - in: header
+          name: X-Auth-token
+          description: Аунтефикационный токен
+          type: string
+          required: true
+        - name: avatar
+          in: body
+          description: аватарка пользователя
+          schema:
+            $ref: '#/definitions/UserImg'
 
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/UserImgUrl'
     patch:
       tags:
         - profile
@@ -600,3 +622,31 @@ definitions:
         type: number
         example: 3
         enum: [1, 2, 3, 4, 5]
+  UserImg:
+    type: object
+    required:
+      - img
+    properties:
+      id:
+        type: number
+        format: uint64
+        example: 228
+        description: "user id"
+      img:
+        type: string
+        format: Base64
+        example: "/9j/4AAQSkZJRgABAQEASABIAAD/"
+  UserImgUrl:
+    type: object
+    required:
+      - img
+    properties:
+      id:
+        type: number
+        format: uint64
+        example: 228
+        description: "user id"
+      img:
+        type: string
+        format: Base64
+        example: "http://findfreelancer.ru/kek228.jpeg"

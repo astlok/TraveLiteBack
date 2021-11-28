@@ -120,3 +120,22 @@ func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	httputils.Respond(w, r, reqId, http.StatusOK, u)
 }
+
+func (h *Handlers) PutAvatar(w http.ResponseWriter, r *http.Request) {
+	reqID := rand.Uint64()
+
+	var u models.UserImg
+
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		httputils.Respond(w, r, reqID, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u, err := h.profileUseCase.SetImage(u)
+	if err != nil {
+		httputils.Respond(w, r, reqID, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	httputils.Respond(w, r, reqID, http.StatusOK, u)
+}

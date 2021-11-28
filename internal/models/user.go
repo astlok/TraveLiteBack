@@ -8,3 +8,8 @@ type User struct {
 	IMG       string `json:"img,omitempty" db:"img"`
 	AuthToken string `json:"auth_token,omitempty" db:"auth_token"`
 }
+
+type UserImg struct {
+	ID  int    `json:"id"`
+	Img string `json:"img"`
+}

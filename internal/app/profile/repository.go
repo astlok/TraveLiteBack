@@ -67,7 +67,7 @@ func (r *Repo) GetUserByID(id uint64) (models.User, error) {
 }
 
 func (r *Repo) ChangeProfile(u models.User) error {
-	_, err := r.db.NamedExec(`UPDATE travelite.users SET email =:email, nickname=:nickname, password=:password, img=:img WHERE id=:id`, u)
+	_, err := r.db.NamedExec(`UPDATE travelite.users SET email =:email, nickname=:nickname, img=:img WHERE id=:id`, u)
 
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {

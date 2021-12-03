@@ -56,8 +56,8 @@ func ConfigureRoute(config configs.Config, postgres *sqlx.DB) *mux.Router {
 	trekPrefix.HandleFunc("/{id:[0-9]+}", trekHandler.DelTrek).Methods(http.MethodDelete)
 	trekPrefix.HandleFunc("/profile/{id:[0-9]+}", trekHandler.GetUsersTreks).Methods(http.MethodGet)
 	trekPrefix.HandleFunc("/search", trekHandler.SearchTrek).Methods(http.MethodGet)
-	trekPrefix.HandleFunc("/{id:[0-9]+}/comments", trekHandler.CreatComment).Methods(http.MethodPost)
-	trekPrefix.HandleFunc("/{id:[0-9]+}/comments", trekHandler.GetTrekComments).Methods(http.MethodGet)
+	trekPrefix.HandleFunc("/comment", trekHandler.CreatComment).Methods(http.MethodPost)
+	trekPrefix.HandleFunc("/comments", trekHandler.GetTrekComments).Methods(http.MethodGet)
 	trekPrefix.HandleFunc("/{id:[0-9]+}/rate", trekHandler.RateTrek).Methods(http.MethodPost)
 
 	regionPrefix := apiV1Prefix.PathPrefix("/region").Subrouter()

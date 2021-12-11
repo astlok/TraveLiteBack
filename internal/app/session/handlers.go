@@ -1,7 +1,6 @@
 package session
 
 import (
-	"encoding/json"
 	"math/rand"
 	"net/http"
 	"travalite/internal/models"
@@ -21,11 +20,12 @@ func NewHandlers(useCase UseCase) *Handlers {
 func (h *Handlers) LogOut(w http.ResponseWriter, r *http.Request) {
 	reqId := rand.Uint64()
 
-	s := models.Session{}
-	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
-		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())
-		return
+	authToken := r.Header.Get("X-Auth-token")
+
+	s := models.Session{
+		AuthToken: authToken,
 	}
+
 	err := h.useCase.DelSession(s)
 	if err != nil {
 		httputils.Respond(w, r, reqId, http.StatusInternalServerError, err.Error())

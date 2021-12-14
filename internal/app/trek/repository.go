@@ -21,11 +21,9 @@ const (
 		"LEFT JOIN travelite.trek_things tt on things.id = tt.thing_id " +
 		"WHERE tt.trek_id = $1"
 
-	selectAllTrekByUserId = "SELECT t.id, t.name, difficult, days, description, file, r.name AS region_name " +
+	selectAllTrekByUserId = "SELECT t.id, t.name, difficult, days, description, file, region" +
 		"FROM " +
 		"travelite.trek AS t " +
-		"LEFT JOIN travelite.region AS r " +
-		"ON t.region_id = r.id " +
 		"WHERE t.user_id = $1"
 
 	selectRatingByTrekId     = "SELECT avg(rating) FROM travelite.trek_rating WHERE trek_id = $1"
@@ -42,11 +40,10 @@ const (
 	selectTrekComments = "SELECT comment.id, trek_id, description, nickname " +
 		"FROM travelite.comment LEFT JOIN travelite.users ON comment.user_id = users.id"
 	selectTrekCommentPhoto = "SELECT photo_url FROM travelite.comment_photo WHERE comment_id = $1"
-	selectAllTreks = "SELECT trek.id, trek.name, difficult, days, description, " +
-		"file, region.name AS region_name, " +
+	selectAllTreks         = "SELECT trek.id, trek.name, difficult, days, description, " +
+		"file, region, user_id, " +
 		"(SELECT COALESCE(AVG(rating), 0) FROM travelite.trek_rating) AS rating " +
-		"FROM travelite.trek " +
-		"LEFT JOIN travelite.region ON trek.region_id = region.id"
+		"FROM travelite.trek "
 )
 
 type Repo struct {
@@ -65,8 +62,8 @@ func (r *Repo) CreateTrek(userID uint64, t models.Trek) (models.Trek, error) {
 	tx := r.db
 
 	err := tx.QueryRow(
-		`INSERT INTO travelite.trek (name, difficult, days, description, file, region_id, user_id)
-	VALUES ($1, $2, $3, $4, $5, (SELECT id FROM travelite.region WHERE name = $6), $7) RETURNING id;`,
+		`INSERT INTO travelite.trek (name, difficult, days, description, file, region, user_id)
+	VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`,
 		t.Name,
 		t.Difficult,
 		t.Days,
@@ -78,46 +75,45 @@ func (r *Repo) CreateTrek(userID uint64, t models.Trek) (models.Trek, error) {
 		return models.Trek{}, err
 	}
 
-	for _, thing := range t.Things {
-		var thingID uint64
+	//for _, thing := range t.Things {
+	//	var thingID uint64
+	//
+	//	err = tx.Get(&thingID, "SELECT id FROM travelite.things WHERE name = $1;", thing)
+	//
+	//	if err != nil && err.Error() != "sql: no rows in result set" {
+	//		return models.Trek{}, err
+	//	}
+	//
+	//	if thingID == 0 {
+	//		err = tx.QueryRow(
+	//			`INSERT INTO travelite.things (name) VALUES ($1) RETURNING id;`, thing).Scan(&thingID)
+	//		if err != nil {
+	//			return models.Trek{}, err
+	//		}
+	//	}
+	//
+	//	err = tx.QueryRow(`INSERT INTO travelite.trek_things (trek_id, thing_id) VALUES ($1, $2);`, ID, thingID).Err()
+	//	if err != nil {
+	//		return models.Trek{}, err
+	//	}
+	//}
+	//
+	//var trek models.Trek
+	//
+	//err = tx.Get(&trek, selectTrekByIdQuery, ID)
+	//if err != nil {
+	//	return models.Trek{}, err
+	//}
+	//
+	//err = tx.Select(&trek.Things, selectThingsByTrekIdQuery, ID)
+	//if err != nil {
+	//	return models.Trek{}, err
+	//}
 
-		err = tx.Get(&thingID, "SELECT id FROM travelite.things WHERE name = $1;", thing)
+	t.ID = ID
 
-		if err != nil && err.Error() != "sql: no rows in result set" {
-			return models.Trek{}, err
-		}
+	return t, nil
 
-		if thingID == 0 {
-			err = tx.QueryRow(
-				`INSERT INTO travelite.things (name) VALUES ($1) RETURNING id;`, thing).Scan(&thingID)
-			if err != nil {
-				return models.Trek{}, err
-			}
-		}
-
-		err = tx.QueryRow(`INSERT INTO travelite.trek_things (trek_id, thing_id) VALUES ($1, $2);`, ID, thingID).Err()
-		if err != nil {
-			return models.Trek{}, err
-		}
-	}
-
-	var trek models.Trek
-
-	err = tx.Get(&trek, selectTrekByIdQuery, ID)
-	if err != nil {
-		return models.Trek{}, err
-	}
-
-	err = tx.Select(&trek.Things, selectThingsByTrekIdQuery, ID)
-	if err != nil {
-		return models.Trek{}, err
-	}
-
-	if err != nil {
-		return models.Trek{}, err
-	}
-
-	return trek, nil
 }
 
 func (r *Repo) SelectTrekById(ID uint64) (models.Trek, error) {

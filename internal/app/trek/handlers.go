@@ -30,6 +30,8 @@ func (h *Handlers) CreateTrek(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 
+	t.UserID = ID
+
 	if err != nil {
 		httputils.Respond(w, r, reqID, http.StatusBadRequest, err)
 		return

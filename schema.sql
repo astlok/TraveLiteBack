@@ -36,12 +36,10 @@ CREATE TABLE travelite.trek
     days        INT                NOT NULL,
     description CITEXT             NOT NULL,
     file        TEXT               NOT NULL,
-    region_id   INT                NOT NULL,
+    region      TEXT               NOT NULL,
     user_id     INT                NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES travelite.users (id),
-    FOREIGN KEY (region_id)
-        REFERENCES travelite.region (id)
+        REFERENCES travelite.users (id)
 );
 
 CREATE TABLE travelite.trek_rating

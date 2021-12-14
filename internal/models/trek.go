@@ -8,8 +8,9 @@ type Trek struct {
 	Things      []string `json:"things"`
 	Description string   `json:"description" db:"description"`
 	File        string   `json:"file" db:"file"`
-	Region      string   `json:"region" db:"region_name"`
+	Region      string   `json:"region" db:"region"`
 	Rating      float64  `json:"rating" db:"rating"`
+	UserID      uint64   `json:"userID,omitempty" db:"user_id"`
 }
 
 type TrekComment struct {
